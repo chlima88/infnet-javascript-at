@@ -1,0 +1,226 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+
+  --red: #ff2301;
+  --yellow: #fff000;
+  --green: #60b515;
+  --purple: #831eb6;
+
+  --black-900: #0e1013;
+  --black-800: #1f1f1f;
+  --black-700: #222222;
+  --black-600: #252525;
+  --black-500: #282828;
+  --black-400: #5f6368;
+  --black-300: #80868b;
+  --black-200: #bdc1c6;
+  --black-100: #f1f2f3;
+
+}
+
+body {
+  font-size: 1.6rem;
+  font-family: 'Trebuchet MS','Lucida Sans', Arial, sans-serif;
+  text-shadow: 1px 1px 1px var(--black-900);
+  background-color: var(--black-700);
+  color: var(--black-100)
+}
+
+h1, h2 {
+  margin-block: 0.5rem;
+}
+
+#app {
+  display: flex;
+  align-items: center;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin-inline: auto;
+  width: 200px;
+  height: 60rem;
+}
+
+.hall {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  width: 100%;
+}
+
+.hall__title {
+  margin-bottom: 2rem;
+}
+
+.hall__player {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+ }
+
+ .hall__player-name,
+ .hall__player-time {
+  font-size: 1.4rem;
+ }
+
+
+.pannel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-inline: auto;
+  width: 200px;
+}
+
+.pannel__title {
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+.pannel button {
+  width: 100%;
+  height: 50px;
+  border-radius: 5px;
+  border: none;
+  font-weight: bold;
+  font-size: 1.8rem;
+  color: white;
+  text-shadow: 2px 2px 2px black;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.pannel button:nth-child(even) {
+  background-color: rgba(10, 100, 0, 1);
+}
+
+.pannel button:nth-child(odd) {
+  background-color: rgba(100, 10, 0, 1);
+}
+
+.pannel button.active,
+.pannel button:hover {
+  filter: brightness(2);
+}
+
+.board {
+  margin: auto;
+  display: grid;
+  gap: 1.1rem;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  /* max-width: fit-content; */
+}
+
+.card-box {
+  background-color: transparent;
+  width: 150px;
+  height: 200px;
+  perspective: 1000px; /* Remove this if you don't want the 3D effect */
+}
+
+/* This container is needed to position the front and back side */
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+/* Do an horizontal flip when you move the mouse over the flip box container */
+.card--clicked {
+  animation: faceup 0.5s linear forwards;
+}
+
+.card--correct {
+  animation: drop 0.5s linear forwards;
+}
+
+.card--initial {
+  animation: facedown 0.5s linear forwards;
+  transition: filter 0.2s;
+}
+
+.card--initial:hover {
+  filter: brightness(1.3);
+}
+
+
+@keyframes faceup {
+  10% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1.05) rotateY(180deg) ;
+  }
+}
+
+@keyframes drop {
+  0% {
+    transform: scale(1.05)  rotateY(180deg);
+  }
+  30% {
+    transform: scale(1) rotateY(180deg);
+  }
+  100% {
+    transform: scale(1) rotateY(180deg);
+  }
+}
+
+@keyframes facedown {
+  0% {
+    transform: scale(1.05) rotateY(180deg);
+  }
+  90% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Position the front and back side */
+.card-front, .card-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  border: 3px solid orange;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+/* Style the front side */
+.card-front {
+  background-image: url("../images/f1logo2.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+/* Style the back side */
+.card-back {
+  background-position: center;
+  background-size: cover;
+  transform: rotateY(180deg);
+}
