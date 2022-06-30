@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 * {
   margin: 0;
@@ -12,33 +12,25 @@ html {
   --red: hsl(6, 100%, 35%);
   --yellow: hsl(56, 100%, 50%);
   --green: hsl(114, 100%, 35%);
-  --purple: hsla(280, 87%, 45%, 0.50);
-
-  --black-900: #0e1013;
-  --black-800: #1f1f1f;
-  --black-700: #222222;
-  --black-600: #252525;
-  --black-500: #282828;
-  --black-400: #5f6368;
-  --black-300: #80868b;
-  --black-200: #bdc1c6;
-  --black-100: #f1f2f3;
+  --black-transparent: rgba(0, 0, 0, 0.6);
+  --white: #f1f2f3;
 
 }
 
 body {
   font-size: 1.6rem;
-  font-family: Poppins, 'Trebuchet MS','Lucida Sans', Arial, sans-serif;
-  text-shadow: 1px 1px 1px var(--black-900);
-  background-color: var(--black-700);
-  color: var(--black-100)
+  font-family: Poppins, sans-serif;
+  text-shadow: 1px 1px 1px #0d0f12;
+  background-color: #222222;
+  color: var(--white)
 }
 
 #app {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10rem;
+  padding: 1rem;
+  gap: 5rem;
   min-height: 100vh;
   background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("./images/bg.png");
   background-size: cover;
@@ -86,6 +78,12 @@ body {
   text-shadow: 2px 2px 2px black;
 }
 
+.hall__list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .hall__player {
   display: flex;
   justify-content: space-between;
@@ -96,12 +94,12 @@ body {
  }
 
  .hall__player:hover {
-  background-color: var(--purple);
+  background-color: var(--black-transparent);
  }
 
  .hall__player-name,
  .hall__player-time {
-  font-size: 1.4rem;
+  font-size: 0.825em;
  }
 
 
@@ -111,14 +109,13 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
-  /* margin-inline: auto; */
   width: 100%;
   text-shadow: 2px 2px 2px black;
 }
 
 .controls__title {
   font-weight: bold;
-  font-size: 1.8rem;
+  font-size: 1em;
 }
 
 .controls__button {
@@ -127,7 +124,7 @@ body {
   border-radius: 5px;
   border: none;
   font-weight: bold;
-  font-size: 1.8rem;
+  font-size:  1em;
   color: white;
   text-shadow: 2px 2px 2px black;
   cursor: pointer;
@@ -148,7 +145,6 @@ body {
 }
 
 .board {
-  /* margin: auto; */
   display: grid;
   gap: 1.1rem;
   padding: 1rem;
@@ -196,7 +192,6 @@ body {
   box-shadow: 0px 0px 10px 0px orange;
 
 }
-
 
 @keyframes faceup {
   10% {
@@ -254,4 +249,55 @@ body {
   background-position: center;
   background-size: cover;
   transform: rotateY(180deg);
+}
+
+@media screen and (max-width: 1200px) {
+  #app {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .sidebar {
+    font-size: 0.8em;
+    flex-direction: row;
+    width: 65rem;
+  }
+
+  .controls__button{
+    width: 10rem;
+  }
+
+  .hall {
+    font-size: 1.1em;
+  }
+
+  .hall__player:nth-child(1n + 6) {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 960px) {
+
+  .sidebar {
+    flex-direction: column;
+    width: auto;
+  }
+
+  .hall {
+    display: none;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .controls__title {
+    width: 62px;
+  }
+
+  .card-box {
+    width: 8rem;
+    height: 11rem;
+  }
 }

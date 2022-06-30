@@ -67,12 +67,12 @@ const app = {
       return scoreboardLapTime > currentTime
     })
 
-    const hall = document.querySelector(".hall")
-    beatenTime
-      ? hall.insertBefore(newLap, beatenTime.parentNode)
-      : hall.appendChild(newLap)
+    const hallList = document.querySelector(".hall__list")
+    if (beatenTime) {
+      hallList.insertBefore(newLap, beatenTime.parentNode)
+      hallList.removeChild(hallList.lastChild)
+    }
 
-    hall.childElementCount >= 11 && hall.removeChild(hall.lastChild)
 
   },
 
@@ -153,18 +153,22 @@ const app = {
       text: "Reset Game",
       eventListener: () => {this.reset()}
     })
-    const lapTime = this.buildElement({type: "p", classname: "controls__title", text: "Lap Time: 0:00.000s"})
+    const lapTime = this.buildElement({type: "p", classname: "controls__title", text: "Time: 0:00.000s"})
     this.timer.setElement(lapTime)
     const controls = this.buildElement({type: "div", classname: "controls"})
     controls.append(lapTime, buttonStart, buttonQuit)
 
-    const hall = this.buildElement({type: "ul", classname: "hall"})
     const gameTitle = this.buildElement({type: "h1", classname: "game__title", text: "F1 Memory"})
+    // const hallTitle = this.buildElement({type: "h2", classname: "hall__title", text: "Hall of Fame"})
+    // const hall = this.buildElement({type: "ul", classname: "hall"})
+
     const hallTitle = this.buildElement({type: "h2", classname: "hall__title", text: "Hall of Fame"})
-    // hall.append(hallTitle)
+    const hallList = this.buildElement({type: "ul", classname: "hall__list"})
+    const hall = this.buildElement({type: "div", classname: "hall"})
+    hall.append(hallTitle, hallList)
 
     const sidebar = this.buildElement({type: "div", classname: "sidebar"})
-    sidebar.append(gameTitle, hallTitle, hall, controls)
+    sidebar.append(gameTitle, hall, controls)
     return sidebar
   },
 
@@ -203,7 +207,8 @@ const app = {
   start: function () {
     if (this.gameState === "stopped"){
       this.reset()
-      this.playername = prompt("Enter your name:").slice(0,12) || "Player"
+      input = prompt("Enter your name:")
+      this.playername = (input && input.slice(0,12)) || "Player"
       this.gameState = "loading"
       this.timer.start()
       const cardList = document.querySelectorAll(".card")
@@ -223,10 +228,7 @@ const app = {
     this.clickedCard = 0
     this.correctCardsCount = 0
     this.clickedCardsCount = 0
-    const component = document.getElementById("app")
-    const oldBoard = document.querySelector(".board")
-    const board = this.buildBoard()
-    component.replaceChild(board, oldBoard)
+    app.render()
   },
 
   saveGame: function () {
@@ -241,7 +243,7 @@ const app = {
 
   restoreGame: function() {
     const gameData = JSON.parse(localStorage.getItem("f1memory"))
-    const scoreboard = document.querySelector(".hall")
+    const scoreboard = document.querySelector(".hall__list")
 
     if (gameData){
       gameData.map(data =>  {
@@ -253,6 +255,7 @@ const app = {
 
   render: function () {
     const component = document.getElementById("app")
+    while (component.firstChild) component.removeChild(component.firstChild)
     const pannel = this.buildPannel()
     const board = this.buildBoard()
     component.append(pannel, board)
