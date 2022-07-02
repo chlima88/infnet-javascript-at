@@ -168,7 +168,7 @@ const app = {
   buildCard: function ({id, pair}) {
     const cardFront = this.buildElement({type: "div", classname: "card__front"})
     const cardBack = this.buildElement({type: "div", classname: "card__back"})
-    cardBack.style.backgroundImage = `url('images/${this.teamsList[pair]}.jpg')`
+    cardFront.style.backgroundImage = `url('../images/${this.teamsList[pair]}.jpg')`
 
     const card = this.buildElement({
       type: "div",
@@ -177,7 +177,7 @@ const app = {
     })
     card.classList.add("card--correct")
     card.pair = pair
-    card.append(cardFront, cardBack)
+    card.append(cardBack, cardFront)
 
     const cardBox = this.buildElement({type: "div", classname: "card__box"})
     cardBox.id = id
