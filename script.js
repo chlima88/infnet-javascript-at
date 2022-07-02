@@ -168,7 +168,7 @@ const app = {
   buildCard: function ({id, pair}) {
     const cardFront = this.buildElement({type: "div", classname: "card__front"})
     const cardBack = this.buildElement({type: "div", classname: "card__back"})
-    cardFront.style.backgroundImage = `url('../images/${this.teamsList[pair]}.jpg')`
+    cardFront.style.backgroundImage = `url("./images/${this.teamsList[pair]}.jpg")`
 
     const card = this.buildElement({
       type: "div",
