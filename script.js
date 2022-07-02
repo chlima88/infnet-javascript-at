@@ -1,6 +1,5 @@
 const app = {
   teamsList: ["mer", "rbr", "fer", "mcl", "alp", "alr", "alt", "ast"],
-  cardList: [],
   gameState: "stopped",
   firstCard: 0,
   clickedCardsCount: 0,
@@ -48,32 +47,21 @@ const app = {
     }
   },
 
-  updateCardState: function(card, from, to) {
-    card.classList.remove(from)
-    card.classList.add(to)
-  },
-
-  setHall: function() {
-    const playerTime = document.querySelector(".controls__title").innerText
-
-    const newLap = this.buildHallLap({name: this.playername, time: playerTime})
-    const currentTimeText = playerTime.split(' ')[1].slice(0, -1)
-    const currentTime = new Date(`1 0:${currentTimeText}`)
-
-    const scoreboard =  document.querySelectorAll(".hall__player-time")
-    const beatenTime = Array.prototype.find.call(scoreboard, scoreboardLap => {
-      const scoreboardLapText = scoreboardLap.innerText.split(' ')[1].slice(0, -1)
-      const scoreboardLapTime = new Date(`1 0:${scoreboardLapText}`)
-      return scoreboardLapTime > currentTime
-    })
-
-    const hallList = document.querySelector(".hall__list")
-    if (beatenTime) {
-      hallList.insertBefore(newLap, beatenTime.parentNode)
-      hallList.removeChild(hallList.lastChild)
+  clickCard: function(card) {
+    try {
+      if (card.classList.contains("card--correct")) throw new Error("Cannot choose discovered pairs!")
+      if (card === this.firstCard) throw new Error("Cannot choose a card twice!")
+      if (this.gameState != "loading" && ++this.clickedCardsCount <= 2) {
+        this.updateCardState(card, "card--initial", "card--clicked")
+        if ( this.firstCard ) {
+          this.checkCards(this.firstCard, card)
+        } else {
+          this.firstCard = card
+        }
+      }
+    } catch(error) {
+      alert(error)
     }
-
-
   },
 
   checkCards: function(card1, card2) {
@@ -92,25 +80,40 @@ const app = {
       if (this.correctCardsCount  === this.pairsCount * 2) {
         this.timer.stop()
         alert("Congratulations! You won!")
-        this.setHall()
+        this.updateHall()
         this.gameState = "stopped"
         this.saveGame()
       }
-    }, 1000)
+    }, 1500)
   },
 
-  clickCard: function(card) {
-    if ( !card.classList.contains("card--correct")
-    && ++this.clickedCardsCount <= 2
-    && card != this.firstCard
-    && this.gameState != "loading" ) {
-      if ( this.firstCard ) {
-        this.updateCardState(card, "card--initial", "card--clicked")
-        this.checkCards(this.firstCard, card)
-      } else {
-        this.updateCardState(card, "card--initial", "card--clicked")
-        this.firstCard = card
-      }
+  updateCardState: function(card, from, to) {
+    card.classList.remove(from)
+    card.classList.add(to)
+  },
+
+  toggleHall: function () {
+    document.querySelector(".hall__list").classList.toggle("hall__list--active")
+  },
+
+  updateHall: function() {
+    const playerTime = document.querySelector(".controls__title").innerText
+
+    const newLap = this.buildHallLap({name: this.playername, time: playerTime})
+    const currentTimeText = playerTime.split(' ')[1].slice(0, -1)
+    const currentTime = new Date(`1 0:${currentTimeText}`)
+
+    const scoreboard =  document.querySelectorAll(".hall__player-time")
+    const beatenTime = Array.prototype.find.call(scoreboard, scoreboardLap => {
+      const scoreboardLapText = scoreboardLap.innerText.split(' ')[1].slice(0, -1)
+      const scoreboardLapTime = new Date(`1 0:${scoreboardLapText}`)
+      return scoreboardLapTime > currentTime
+    })
+
+    const hallList = document.querySelector(".hall__list")
+    if (beatenTime) {
+      hallList.insertBefore(newLap, beatenTime.parentNode)
+      hallList.removeChild(hallList.lastChild)
     }
   },
 
@@ -122,32 +125,14 @@ const app = {
     return element
   },
 
-  buildCard: function ({id, pair}) {
-    const cardFront = this.buildElement({type: "div", classname: "card-front"})
-    const cardBack = this.buildElement({type: "div", classname: "card-back"})
-    cardBack.style.backgroundImage = `url('../images/${this.teamsList[pair]}.jpg')`
-
-    const card = this.buildElement({
-      type: "div",
-      classname: "card",
-      eventListener: () => { this.gameState === "started" && this.clickCard(card) }})
-    card.pair = pair
-    card.id = id
-    card.append(cardFront, cardBack)
-
-    const cardBox = this.buildElement({type: "div", classname: "card-box"})
-    cardBox.appendChild(card)
-    return cardBox
-  },
-
-  buildPannel: function () {
-    const buttonStart = this.buildElement({
+  buildSidebar: function () {
+    const startButton = this.buildElement({
       type: "button",
       classname: "controls__button",
       text: "Start Lap",
       eventListener: () => {this.start()}
     })
-    const buttonQuit = this.buildElement({
+    const resetButton = this.buildElement({
       type: "button",
       classname: "controls__button",
       text: "Reset Game",
@@ -156,16 +141,14 @@ const app = {
     const lapTime = this.buildElement({type: "p", classname: "controls__title", text: "Time: 0:00.000s"})
     this.timer.setElement(lapTime)
     const controls = this.buildElement({type: "div", classname: "controls"})
-    controls.append(lapTime, buttonStart, buttonQuit)
+    controls.append(lapTime, startButton, resetButton)
 
     const gameTitle = this.buildElement({type: "h1", classname: "game__title", text: "F1 Memory"})
-    // const hallTitle = this.buildElement({type: "h2", classname: "hall__title", text: "Hall of Fame"})
-    // const hall = this.buildElement({type: "ul", classname: "hall"})
-
     const hallTitle = this.buildElement({type: "h2", classname: "hall__title", text: "Hall of Fame"})
+    const hallButton = this.buildElement({type: "button", classname: "hall__toggler", text: "Show/Hide", eventListener: ()=> this.toggleHall() })
     const hallList = this.buildElement({type: "ul", classname: "hall__list"})
     const hall = this.buildElement({type: "div", classname: "hall"})
-    hall.append(hallTitle, hallList)
+    hall.append(hallTitle, hallButton, hallList)
 
     const sidebar = this.buildElement({type: "div", classname: "sidebar"})
     sidebar.append(gameTitle, hall, controls)
@@ -177,45 +160,76 @@ const app = {
     playerName.innerText = name
     const playerTime = this.buildElement({type: "p", classname: "hall__player-time"})
     playerTime.innerText = time
-    const newLap = this.buildElement({type: "li", classname: "hall__player"})
+    const newLap = this.buildElement({type: "li", classname: "hall__player", eventListener: () => { this.toggleHall()}})
     newLap.append(playerName, playerTime)
     return newLap
   },
 
-  buildBoard: function (pairs=this.pairsCount) {
-    const cardList = this.generateCardList(pairs)
+  buildCard: function ({id, pair}) {
+    const cardFront = this.buildElement({type: "div", classname: "card__front"})
+    const cardBack = this.buildElement({type: "div", classname: "card__back"})
+    cardBack.style.backgroundImage = `url('../images/${this.teamsList[pair]}.jpg')`
+
+    const card = this.buildElement({
+      type: "div",
+      classname: "card",
+      eventListener: () => { this.gameState === "started" && this.clickCard(card) }
+    })
+    card.classList.add("card--correct")
+    card.pair = pair
+    card.append(cardFront, cardBack)
+
+    const cardBox = this.buildElement({type: "div", classname: "card__box"})
+    cardBox.id = id
+    cardBox.appendChild(card)
+    return cardBox
+  },
+
+  buildBoard: function (cardList) {
+    if (!cardList) cardList = this.generateCardList(this.pairsCount)
     const board = this.buildElement({type: "div", classname: "board"})
     board.id = "board"
     board.append(...cardList)
     return board
   },
 
-  generateCardList: function(pairs) {
+  generateCardList: function(pairs=8) {
     const cardList = []
     for (let pair = 0; pair < pairs; pair ++) {
       cardList.push(this.buildCard({id: pair, pair}))
       cardList.push(this.buildCard({id: pair + pairs , pair}))
     }
+    return cardList
+  },
+
+  randomizeCardList: function (cardList) {
     const randomizedCardList = new Set()
     while (randomizedCardList.size != cardList.length) {
       const randomIndex = Math.floor(Math.random() * cardList.length)
       randomizedCardList.add(cardList[randomIndex])
     }
     return randomizedCardList
+
   },
 
   start: function () {
     if (this.gameState === "stopped"){
       this.reset()
-      input = prompt("Enter your name:")
+
+      const cardList = this.randomizeCardList(this.generateCardList())
+      const newBoard = this.buildBoard(cardList)
+      const board = document.getElementById("board")
+      board.parentElement.replaceChild(newBoard, board)
+
+      let input = prompt("Enter your name:")
       this.playername = (input && input.slice(0,12)) || "Player"
       this.gameState = "loading"
       this.timer.start()
-      const cardList = document.querySelectorAll(".card")
-      Array.prototype.forEach.call(cardList, card => {
-        this.updateCardState(card, "card--initial", "card--clicked")
+
+      cardList.forEach(card => {
+        this.updateCardState(card.children[0], "card--correct", "card--clicked")
         setTimeout(() => {
-          this.updateCardState(card, "card--clicked", "card--initial")
+          this.updateCardState(card.children[0], "card--clicked", "card--initial")
           this.gameState = "started"
         }, 3000)
       })
@@ -237,14 +251,12 @@ const app = {
         name: data.children[0].innerText,
         time: data.children[1].innerText
       }))
-
     localStorage.setItem("f1memory", JSON.stringify(gameData))
   },
 
   restoreGame: function() {
     const gameData = JSON.parse(localStorage.getItem("f1memory"))
     const scoreboard = document.querySelector(".hall__list")
-
     if (gameData){
       gameData.map(data =>  {
         const restoredLap = this.buildHallLap({name: data.name, time: data.time})
@@ -256,7 +268,7 @@ const app = {
   render: function () {
     const component = document.getElementById("app")
     while (component.firstChild) component.removeChild(component.firstChild)
-    const pannel = this.buildPannel()
+    const pannel = this.buildSidebar()
     const board = this.buildBoard()
     component.append(pannel, board)
     this.restoreGame()
