@@ -168,7 +168,7 @@ const app = {
     return newLap
   },
 
-  buildCard: function ({id, pair}) {
+  buildCard: function (pair) {
     const cardFront = this.buildElement({type: "div", classname: "card__front"})
     const cardBack = this.buildElement({type: "div", classname: "card__back"})
     cardFront.style.backgroundImage = `url("./images/${this.teamsList[pair]}.jpg")`
@@ -183,7 +183,6 @@ const app = {
     card.append(cardBack, cardFront)
 
     const cardBox = this.buildElement({type: "div", classname: "card__box"})
-    cardBox.id = id
     cardBox.appendChild(card)
     return cardBox
   },
@@ -191,7 +190,6 @@ const app = {
   buildBoard: function (cardList) {
     if (!cardList) cardList = this.generateCardList(this.pairsCount)
     const board = this.buildElement({type: "div", classname: "board"})
-    board.id = "board"
     board.append(...cardList)
     return board
   },
@@ -199,8 +197,8 @@ const app = {
   generateCardList: function(pairs=8) {
     const cardList = []
     for (let pair = 0; pair < pairs; pair ++) {
-      cardList.push(this.buildCard({id: pair, pair}))
-      cardList.push(this.buildCard({id: pair + pairs , pair}))
+      cardList.push(this.buildCard(pair))
+      cardList.push(this.buildCard(pair))
     }
     return cardList
   },
@@ -221,7 +219,7 @@ const app = {
 
       const cardList = this.randomizeCardList(this.generateCardList(this.pairsCount))
       const newBoard = this.buildBoard(cardList)
-      const board = document.getElementById("board")
+      const board = document.querySelector(".board")
       board.parentElement.replaceChild(newBoard, board)
 
       let input = prompt("Enter your name:")
@@ -233,9 +231,10 @@ const app = {
         this.updateCardState(card.children[0], "card--correct", "card--clicked")
         setTimeout(() => {
           this.updateCardState(card.children[0], "card--clicked", "card--initial")
-          this.gameState = "started"
         }, 3000)
       })
+      setTimeout(() => this.gameState = "started" , 3000)
+
     } else {
       alert("Cannot start a previously started game. Try 'Reset Game' first.")
     }
@@ -248,7 +247,7 @@ const app = {
     this.correctCardsCount = 0
     this.clickedCardsCount = 0
     const newBoard = this.buildBoard()
-    const board = document.getElementById("board")
+    const board = document.querySelector(".board")
     board.parentElement.replaceChild(newBoard, board)
   },
 
@@ -273,7 +272,7 @@ const app = {
   },
 
   render: function () {
-    const component = document.getElementById("app")
+    const component = document.getElementById("tabuleiro")
     while (component.firstChild) component.removeChild(component.firstChild)
     const pannel = this.buildSidebar()
     const board = this.buildBoard()

@@ -60,7 +60,7 @@ h1, h2 {
   font-weight: 600;
 }
 
-#app {
+#tabuleiro {
   display: flex;
   align-items: center;
   justify-content: center;
