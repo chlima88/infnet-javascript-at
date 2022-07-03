@@ -297,7 +297,7 @@ h1, h2 {
 }
 
 @media screen and (max-width: 1100px) {
-  #app {
+  #tabuleiro {
     flex-direction: column;
     gap: 2rem;
   }
