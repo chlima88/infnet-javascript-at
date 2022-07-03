@@ -111,9 +111,12 @@ const app = {
     })
 
     const hallList = document.querySelector(".hall__list")
+
     if (beatenTime) {
       hallList.insertBefore(newLap, beatenTime.parentNode)
-      hallList.removeChild(hallList.lastChild)
+      hallList.childElementCount > 10 && hallList.removeChild(hallList.lastChild)
+    } else if (hallList.childElementCount < 10) {
+      hallList.appendChild(newLap)
     }
   },
 
@@ -216,7 +219,7 @@ const app = {
     if (this.gameState === "stopped"){
       this.reset()
 
-      const cardList = this.randomizeCardList(this.generateCardList())
+      const cardList = this.randomizeCardList(this.generateCardList(this.pairsCount))
       const newBoard = this.buildBoard(cardList)
       const board = document.getElementById("board")
       board.parentElement.replaceChild(newBoard, board)
@@ -233,6 +236,8 @@ const app = {
           this.gameState = "started"
         }, 3000)
       })
+    } else {
+      alert("Cannot start a previously started game. Try 'Reset Game' first.")
     }
   },
 
@@ -242,7 +247,9 @@ const app = {
     this.clickedCard = 0
     this.correctCardsCount = 0
     this.clickedCardsCount = 0
-    app.render()
+    const newBoard = this.buildBoard()
+    const board = document.getElementById("board")
+    board.parentElement.replaceChild(newBoard, board)
   },
 
   saveGame: function () {
